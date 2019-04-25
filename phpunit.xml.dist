@@ -21,4 +21,7 @@
             <directory suffix=".php">./app</directory>
         </whitelist>
     </filter>
+    <php>
+        <server name="DB_CONNECTION" value="sqlite_testing"/>
+    </php>
 </phpunit>
