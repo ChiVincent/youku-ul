@@ -33,6 +33,7 @@ class FindService
         $finder->files()->name($this->formats)->in($path);
 
         if (!$finder->hasResults()) {
+            $path = getcwd() . "/$path";
             throw new Exception("Cannot find any videos in `$path`");
         }
 
