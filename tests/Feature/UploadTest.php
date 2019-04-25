@@ -12,12 +12,14 @@ class UploadTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        mkdir("$this->path");
         touch("$this->path/fake.mp4");
     }
 
     public function tearDown(): void
     {
         unlink("$this->path/fake.mp4");
+        rmdir("$this->path");
         parent::tearDown();
     }
 
