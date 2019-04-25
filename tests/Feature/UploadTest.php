@@ -6,9 +6,12 @@ use Tests\TestCase;
 
 class UploadTest extends TestCase
 {
+    protected $command = 'upload';
+    protected $path = 'tests/mock-storage';
+
     public function testUpload()
     {
-        $this->artisan('upload', ['path' => 'tests/mock-storage'])
+        $this->artisan($this->command, ['path' => $this->path])
             ->assertExitCode(0);
     }
 }
