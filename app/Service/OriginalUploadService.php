@@ -10,6 +10,7 @@ use Chivincent\Youku\Api\Response\UploadSlice;
 use Chivincent\Youku\Exception\UploadException;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class OriginalUploadService implements UploadService
 {
@@ -44,42 +45,42 @@ class OriginalUploadService implements UploadService
                 config('youku.oss', false),
                 0
             );
-            try {
-                $this->api->createFile(
-                    gethostbyname($response->getUploadServerUri()),
-                    $response->getUploadToken(),
-                    filesize($video->path),
-                    pathinfo($video->path, PATHINFO_EXTENSION),
-                    (int) (config('YOUKU_SLICE_SIZE', 10 * 1024 * 1024) / 1024)
-                );
-            } catch (\Exception $exception) {
-                dd($exception);
-            }
+            $this->api->createFile(
+                gethostbyname($response->getUploadServerUri()),
+                $response->getUploadToken(),
+                filesize($video->path),
+                pathinfo($video->path, PATHINFO_EXTENSION),
+                (int) (config('YOUKU_SLICE_SIZE', 10 * 1024 * 1024) / 1024)
+            );
 
             $video->upload_token = $response->getUploadToken();
             $video->upload_server_uri = $response->getUploadServerUri();
             $video->slice_size = config('youku.slice_size', 10 * 1024 * 1024);
             $video->status = 'created';
             $video->save();
-        } catch (UploadException $exception) {
+        } catch (\Exception|\Throwable $exception) {
             Log::error(sprintf('File: "%s"(id: %d) has not been created, it was caused by "%s"', $video->name, $video->id, $exception->getMessage()));
         }
     }
 
     public function uploadFile(Video $video)
     {
-        $slices = $this->sliceBinary($video->path, $video->slice_size);
-        $video->update([
-            'status' => 'uploading',
-        ]);
-        $this->uploadSlices($video, $slices, $video->slice_size);
-        $video->update([
-            'status' => 'checking',
-        ]);
-        $this->checkUpload($video);
-        $video->update([
-            'status' => 'uploaded',
-        ]);
+        try {
+            $slices = $this->sliceBinary($video->path, $video->slice_size);
+            $video->update([
+                'status' => 'uploading',
+            ]);
+            $this->uploadSlices($video, $slices, $video->slice_size);
+            $video->update([
+                'status' => 'checking',
+            ]);
+            $this->checkUpload($video);
+            $video->update([
+                'status' => 'uploaded',
+            ]);
+        } catch (\Exception|\Throwable $exception) {
+            Log::error(sprintf('File: "%s"(id: %d) has not been uploaded, it was caused by "%s"', $video->name, $video->id, $exception->getMessage()));
+        }
     }
 
     private function sliceBinary(string $path, int $size): array
@@ -99,15 +100,11 @@ class OriginalUploadService implements UploadService
 
     private function uploadSlices(Video $video, array $slices, int $size)
     {
-        $task = $video->task_id ?? $this->createSliceRoot($video->upload_token, gethostbyname($video->upload_server_uri))->getSliceTaskId();
-        $video->update([
-            'task_id' => $task,
-        ]);
+        $task = $this->createSliceRoot($video->upload_token, gethostbyname($video->upload_server_uri))->getSliceTaskId();
 
-        for ($i = ($video->uploaded_slices ?? 0); $i < count($slices); $i++) {
+        for ($i = $task; $i < count($slices); $i++) {
             $this->uploadCurrentSlice($slices[$i], $video->upload_token, $task++, $size * $i, gethostbyname($video->upload_server_uri));
             $video->update([
-                'task_id' => $task,
                 'uploaded_slices' => $i,
             ]);
         }
