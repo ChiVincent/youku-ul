@@ -120,7 +120,6 @@ class Upload extends Command
             $video->status = 'created';
             $video->save();
         } catch (UploadException $exception) {
-            $this->error(sprintf('File: "%s" created failed, cause by "%s"', $video->name, $exception->getMessage()));
         }
     }
 
@@ -149,7 +148,6 @@ class Upload extends Command
             $video->status = 'uploaded';
             $video->save();
         } catch (OssException $exception) {
-            $this->error(sprintf('File: "%s" uploaded failed, cause by "%s"', $video->name, $exception->getMessage()));
         }
     }
 
@@ -157,7 +155,7 @@ class Upload extends Command
     {
         $expiredAt = new \DateTime($video->expire_time);
 
-        return new \DateTime('now') < $expiredAt;
+        return new \DateTime('now') > $expiredAt;
     }
 
     private function refreshOssToken(Video $video): Video
@@ -207,7 +205,6 @@ class Upload extends Command
             $video->video_id = $response->getVideoId();
             $video->save();
         } catch (UploadException $exception) {
-            $this->error(sprintf('File: "%s" committed failed, cause by "%s"', $video->name, $exception->getMessage()));
         }
     }
 }
