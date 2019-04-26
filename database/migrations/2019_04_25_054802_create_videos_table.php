@@ -18,6 +18,7 @@ class CreateVideosTable extends Migration
             $table->string('path');
             $table->string('name');
             $table->string('hash')->unique();
+            $table->string('upload_token');
             $table->string('video_id')->nullable();
             $table->string('upload_server_uri')->nullable();
             $table->string('endpoint')->nullable();
@@ -29,6 +30,7 @@ class CreateVideosTable extends Migration
             $table->string('expire_time')->nullable();
             $table->integer('slice_size')->nullable();
             $table->integer('uploaded_slices')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }
