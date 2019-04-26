@@ -77,6 +77,7 @@ class Upload extends Command
     {
         $this->info(sprintf('There are %d videos for creating.', $videos->count()));
         $progressBar = $this->output->createProgressBar($videos->count());
+        $progressBar->setMessage('File creating...');
         $progressBar->start();
         foreach ($videos as $video) {
             $this->createFile($video);
