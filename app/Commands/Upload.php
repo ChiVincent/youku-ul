@@ -9,13 +9,10 @@ use Chivincent\Youku\Api\Api;
 use Chivincent\Youku\Api\Response\StsInf;
 use Chivincent\Youku\Exception\UploadException;
 use GuzzleHttp\Client;
-use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Date;
 use LaravelZero\Framework\Commands\Command;
 use OSS\Core\OssException;
 use OSS\OssClient;
-use Symfony\Component\Finder\Finder;
 
 class Upload extends Command
 {
