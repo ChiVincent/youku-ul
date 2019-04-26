@@ -98,13 +98,13 @@ class Upload extends Command
                 $video->name,
                 hash_file('md5', $video->path),
                 filesize($video->path),
-                null,
-                null,
-                'reproduced',
-                'all',
-                null,
+                config('youku.meta.category', null),
+                config('youku.meta.tags', null),
+                config('youku.meta.copyright', 'original'),
+                config('youku.meta.public_type', 'all'),
+                config('youku.meta.watch_password', null),
                 0,
-                1,
+                config('youku.oss', false),
                 0
             );
 
