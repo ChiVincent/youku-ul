@@ -5,6 +5,7 @@ namespace App\Commands;
 use App\Contract\UploadService;
 use App\Service\FindService;
 use App\Service\IndexService;
+use App\Service\OriginalUploadService;
 use App\Service\OssUploadService;
 use App\Video;
 use Chivincent\Youku\Api\Api;
@@ -62,7 +63,7 @@ class Upload extends Command
 
         $this->uploadService = config('youku.oss', false)
             ? new OssUploadService()
-            : new \stdClass();
+            : new OriginalUploadService();
     }
 
     /**
