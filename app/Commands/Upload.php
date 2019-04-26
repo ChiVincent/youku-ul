@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use App\Service\FindService;
+use App\Service\IndexService;
 use Illuminate\Console\Scheduling\Schedule;
 use LaravelZero\Framework\Commands\Command;
 use Symfony\Component\Finder\Finder;
@@ -28,11 +29,17 @@ class Upload extends Command
      */
     protected $findService;
 
-    public function __construct(FindService $findService)
+    /**
+     * @var IndexService
+     */
+    protected $indexService;
+
+    public function __construct(FindService $findService, IndexService $indexService)
     {
         parent::__construct();
 
         $this->findService = $findService;
+        $this->indexService = $indexService;
     }
 
     /**
@@ -41,5 +48,6 @@ class Upload extends Command
     public function handle()
     {
         $videos = $this->findService->findFiles($this->argument('path'));
+        $this->indexService->index($videos);
     }
 }
