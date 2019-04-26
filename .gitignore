@@ -5,3 +5,4 @@
 /database/database.sqlite
 .env
 /tests/mock-storage
+/builds

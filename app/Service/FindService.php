@@ -24,7 +24,7 @@ class FindService
         // DV
         '*.dvix', '*.dv',
         // Others
-        '*.mkv', '*.flv', '*.vob', '*.qt', '*.divx', '*.cpk', '*.fli', '*.flc', '*.mod'
+        '*.mkv', '*.flv', '*.vob', '*.qt', '*.divx', '*.cpk', '*.fli', '*.flc', '*.mod', '*.webm',
     ];
 
     public function findFiles(string $path): Finder

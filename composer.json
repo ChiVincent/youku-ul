@@ -19,6 +19,7 @@
         "php": "^7.1.3",
         "chivincent/youku-uploader": "^1.2",
         "illuminate/database": "5.8.*",
+        "illuminate/log": "5.8.*",
         "intonate/tinker-zero": "^1.0",
         "laravel-zero/framework": "5.8.*",
         "symfony/finder": "^4.2"
