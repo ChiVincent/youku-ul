@@ -2,3 +2,6 @@
 /.idea
 /.vscode
 /.vagrant
+/database/database.sqlite
+.env
+/tests/mock-storage

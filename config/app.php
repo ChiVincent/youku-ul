@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => 'Youku-ul',
+    'name' => 'youku-ul',
 
     /*
     |--------------------------------------------------------------------------
@@ -54,6 +54,7 @@ return [
 
     'providers' => [
         App\Providers\AppServiceProvider::class,
+        Intonate\TinkerZero\TinkerZeroServiceProvider::class,
     ],
 
 ];
