@@ -102,7 +102,7 @@ class OriginalUploadService implements UploadService
     {
         $task = $this->createSliceRoot($video->upload_token, gethostbyname($video->upload_server_uri))->getSliceTaskId();
 
-        for ($i = $task; $i < count($slices); $i++) {
+        for ($i = 0; $i < count($slices); $i++) {
             $this->uploadCurrentSlice($slices[$i], $video->upload_token, $task++, $size * $i, gethostbyname($video->upload_server_uri));
             $video->update([
                 'uploaded_slices' => $i,
