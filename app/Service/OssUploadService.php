@@ -8,6 +8,7 @@ use Chivincent\Youku\Api\Api;
 use Chivincent\Youku\Api\Response\StsInf;
 use Chivincent\Youku\Exception\UploadException;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 use OSS\Core\OssException;
 use OSS\OssClient;
 
@@ -57,6 +58,7 @@ class OssUploadService implements UploadService
             $video->status = 'created';
             $video->save();
         } catch (UploadException $exception) {
+            Log::error(sprintf('File: "%s"(id: %d) has not been created, it was caused by "%s"', $video->name, $video->id, $exception->getMessage()));
         }
     }
 
@@ -73,6 +75,7 @@ class OssUploadService implements UploadService
             $video->status = 'uploaded';
             $video->save();
         } catch (OssException $exception) {
+            Log::error(sprintf('File: "%s"(id: %d) has not been uploaded, it was caused by "%s"', $video->name, $video->id, $exception->getMessage()));
         }
     }
 
@@ -118,6 +121,7 @@ class OssUploadService implements UploadService
             $video->video_id = $response->getVideoId();
             $video->save();
         } catch (UploadException $exception) {
+            Log::error(sprintf('File: "%s"(id: %d) has not been committed, it was caused by "%s"', $video->name, $video->id, $exception->getMessage()));
         }
     }
 }
