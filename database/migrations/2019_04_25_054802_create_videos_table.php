@@ -15,9 +15,10 @@ class CreateVideosTable extends Migration
     {
         Schema::create('videos', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('path');
             $table->string('name');
             $table->string('hash')->unique();
-            $table->string('video_id');
+            $table->string('video_id')->nullable();
             $table->string('upload_server_uri')->nullable();
             $table->string('endpoint')->nullable();
             $table->string('security_token')->nullable();
