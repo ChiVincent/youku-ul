@@ -44,17 +44,21 @@ class OriginalUploadService implements UploadService
                 config('youku.oss', false),
                 0
             );
-            $this->api->createFile(
-                gethostbyname($response->getUploadServerUri()),
-                $response->getUploadToken(),
-                filesize($video->path),
-                pathinfo($video->path, PATHINFO_EXTENSION),
-                config('YOUKU_SLICE_SIZE', 10 * 1024 * 1024)
-            );
+            try {
+                $this->api->createFile(
+                    gethostbyname($response->getUploadServerUri()),
+                    $response->getUploadToken(),
+                    filesize($video->path),
+                    pathinfo($video->path, PATHINFO_EXTENSION),
+                    (int) (config('YOUKU_SLICE_SIZE', 10 * 1024 * 1024) / 1024)
+                );
+            } catch (\Exception $exception) {
+                dd($exception);
+            }
 
             $video->upload_token = $response->getUploadToken();
             $video->upload_server_uri = $response->getUploadServerUri();
-            $video->slice_length = config('youku.slice_size', 10 * 1024 * 1024);
+            $video->slice_size = config('youku.slice_size', 10 * 1024 * 1024);
             $video->status = 'created';
             $video->save();
         } catch (UploadException $exception) {
@@ -64,11 +68,15 @@ class OriginalUploadService implements UploadService
 
     public function uploadFile(Video $video)
     {
-        $slices = $this->sliceBinary($video->path, $video->slice_length);
+        $slices = $this->sliceBinary($video->path, $video->slice_size);
         $video->update([
             'status' => 'uploading',
         ]);
-        $this->uploadSlices($video, $slices, $video->slice_length);
+        $this->uploadSlices($video, $slices, $video->slice_size);
+        $video->update([
+            'status' => 'checking',
+        ]);
+        $this->checkUpload($video);
         $video->update([
             'status' => 'uploaded',
         ]);
@@ -98,6 +106,10 @@ class OriginalUploadService implements UploadService
 
         for ($i = ($video->uploaded_slices ?? 0); $i < count($slices); $i++) {
             $this->uploadCurrentSlice($slices[$i], $video->upload_token, $task++, $size * $i, gethostbyname($video->upload_server_uri));
+            $video->update([
+                'task_id' => $task,
+                'uploaded_slices' => $i,
+            ]);
         }
     }
 
@@ -118,6 +130,14 @@ class OriginalUploadService implements UploadService
             dechex(crc32($binary)),
             bin2hex(md5($binary, true))
         );
+    }
+
+    private function checkUpload(Video $video)
+    {
+        do {
+            $check = $this->api->check(gethostbyname($video->upload_server_uri), $video->upload_token);
+            sleep(config('youku.check_waiting', 10));
+        } while(!$check->isFinished() || $check->getStatus() !== 1);
     }
 
     public function commitFile(Video $video)

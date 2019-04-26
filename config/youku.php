@@ -6,7 +6,9 @@ return [
 
     'oss' => env('YOUKU_OSS'),
 
+    // Configure for original upload method.
     'slice_size' => env('YOUKU_SLICE_SIZE', 10 * 1024 * 1024), // 10MB
+    'check_waiting' => 10, // seconds
 
     'meta' => [
         'category' => env('YOUKU_VIDEO_CATEGORY', null),
