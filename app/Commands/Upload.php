@@ -99,7 +99,8 @@ class Upload extends Command
 
     protected function uploadFiles(Collection $videos)
     {
-        $this->info(sprintf('There are %d videos for uploading', $videos->count()));
+        $this->line('');
+        $this->info(sprintf('There are %d videos for uploading.', $videos->count()));
         $progressBar = $this->output->createProgressBar($videos->count());
         $progressBar->start();
         foreach ($videos as $video) {
@@ -111,6 +112,7 @@ class Upload extends Command
 
     protected function commitFiles(Collection $videos)
     {
+        $this->line('');
         $this->info(sprintf('There are %d videos for committing.', $videos->count()));
         $progressBar = $this->output->createProgressBar($videos->count());
         $progressBar->start();
