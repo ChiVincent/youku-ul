@@ -10,7 +10,7 @@ class Video extends Model
     protected $fillable = [
         'name', 'hash', 'path', 'upload_token', 'video_id', 'upload_server_uri', 'endpoint', 'security_token',
         'oss_bucket', 'oss_object', 'temp_access_id', 'temp_access_secret', 'expire_time', 'slice_size',
-        'uploaded_slices', 'status',
+        'task_id', 'uploaded_slices', 'status',
     ];
 
     public static function uncreatedFiles(): Collection
@@ -20,7 +20,7 @@ class Video extends Model
 
     public static function unuploadedFiles(): Collection
     {
-        return self::where('status', 'created')->get();
+        return self::where('status', 'created')->orWhere('status', 'uploading')->get();
     }
 
     public static function uncommittedFiles(): Collection
