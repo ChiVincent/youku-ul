@@ -29,6 +29,7 @@ class CreateVideosTable extends Migration
             $table->string('expire_time')->nullable();
             $table->integer('slice_size')->nullable();
             $table->integer('uploaded_slices')->nullable();
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

@@ -8,6 +8,6 @@ class Video extends Model
 {
     protected $fillable = [
         'name', 'hash', 'path', 'video_id', 'upload_server_uri', 'endpoint', 'security_token', 'oss_bucket', 'oss_object',
-        'temp_access_id', 'temp_access_secret', 'expire_time', 'slice_size', 'uploaded_slices',
+        'temp_access_id', 'temp_access_secret', 'expire_time', 'slice_size', 'uploaded_slices', 'status',
     ];
 }
