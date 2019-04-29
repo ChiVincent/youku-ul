@@ -78,6 +78,12 @@ class OriginalUploadService implements UploadService
             $video->update([
                 'status' => 'uploaded',
             ]);
+        } catch(UploadException $exception) {
+            // When Upload Token Expired, restart it.
+            if ($exception->getCode() === 120010223) {
+                $this->createFile($video);
+                $this->uploadFile($video);
+            }
         } catch (\Exception|\Throwable $exception) {
             Log::error(sprintf('File: "%s"(id: %d) has not been uploaded, it was caused by "%s"', $video->name, $video->id, $exception->getMessage()));
         }
