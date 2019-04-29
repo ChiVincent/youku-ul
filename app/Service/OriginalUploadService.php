@@ -78,6 +78,16 @@ class OriginalUploadService implements UploadService
             $video->update([
                 'status' => 'uploaded',
             ]);
+            $this->commitFile($video);
+            $video->update([
+                'status' => 'finished',
+            ]);
+        } catch(UploadException $exception) {
+            // When Upload Token Expired, restart it.
+            if ($exception->getCode() === 120010223) {
+                $this->createFile($video);
+                $this->uploadFile($video);
+            }
         } catch (\Exception|\Throwable $exception) {
             Log::error(sprintf('File: "%s"(id: %d) has not been uploaded, it was caused by "%s"', $video->name, $video->id, $exception->getMessage()));
         }
@@ -137,7 +147,7 @@ class OriginalUploadService implements UploadService
         } while(!$check->isFinished() || $check->getStatus() !== 1);
     }
 
-    public function commitFile(Video $video)
+    protected function commitFile(Video $video)
     {
         try {
             $response = $this->api->commit(

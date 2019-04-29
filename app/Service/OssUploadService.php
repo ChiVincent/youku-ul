@@ -74,6 +74,8 @@ class OssUploadService implements UploadService
 
             $video->status = 'uploaded';
             $video->save();
+
+            $this->commitFile($video);
         } catch (OssException $exception) {
             Log::error(sprintf('File: "%s"(id: %d) has not been uploaded, it was caused by "%s"', $video->name, $video->id, $exception->getMessage()));
         }
@@ -109,7 +111,7 @@ class OssUploadService implements UploadService
         return $video;
     }
 
-    public function commitFile(Video $video)
+    protected function commitFile(Video $video)
     {
         try {
             $response = $this->api->commit(
@@ -119,6 +121,7 @@ class OssUploadService implements UploadService
             );
 
             $video->video_id = $response->getVideoId();
+            $video->status = 'finished';
             $video->save();
         } catch (UploadException $exception) {
             Log::error(sprintf('File: "%s"(id: %d) has not been committed, it was caused by "%s"', $video->name, $video->id, $exception->getMessage()));
