@@ -78,6 +78,10 @@ class OriginalUploadService implements UploadService
             $video->update([
                 'status' => 'uploaded',
             ]);
+            $this->commitFile($video);
+            $video->update([
+                'status' => 'finished',
+            ]);
         } catch(UploadException $exception) {
             // When Upload Token Expired, restart it.
             if ($exception->getCode() === 120010223) {
@@ -143,7 +147,7 @@ class OriginalUploadService implements UploadService
         } while(!$check->isFinished() || $check->getStatus() !== 1);
     }
 
-    public function commitFile(Video $video)
+    protected function commitFile(Video $video)
     {
         try {
             $response = $this->api->commit(

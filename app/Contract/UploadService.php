@@ -9,6 +9,4 @@ interface UploadService
     public function createFile(Video $video);
 
     public function uploadFile(Video $video);
-
-    public function commitFile(Video $video);
 }

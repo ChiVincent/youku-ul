@@ -76,8 +76,6 @@ class Upload extends Command
         $this->createFiles(Video::uncreatedFiles());
 
         $this->uploadFiles(Video::unuploadedFiles());
-
-        $this->commitFiles(Video::uncommittedFiles());
     }
 
     protected function indexing()
@@ -106,19 +104,6 @@ class Upload extends Command
         $progressBar->start();
         foreach ($videos as $video) {
             $this->uploadService->uploadFile($video);
-            $progressBar->advance();
-        }
-        $progressBar->finish();
-    }
-
-    protected function commitFiles(Collection $videos)
-    {
-        $this->line('');
-        $this->info(sprintf('There are %d videos for committing.', $videos->count()));
-        $progressBar = $this->output->createProgressBar($videos->count());
-        $progressBar->start();
-        foreach ($videos as $video) {
-            $this->uploadService->commitFile($video);
             $progressBar->advance();
         }
         $progressBar->finish();
