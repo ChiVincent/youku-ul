@@ -143,7 +143,8 @@ class OriginalUploadService implements UploadService
             $response = $this->api->commit(
                 config('youku.access_token'),
                 config('youku.client_id'),
-                $video->upload_token
+                $video->upload_token,
+                gethostbyname($video->upload_server_uri)
             );
 
             $video->video_id = $response->getVideoId();
