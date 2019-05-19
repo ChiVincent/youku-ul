@@ -82,7 +82,7 @@ class OriginalUploadService implements UploadService
             $video->update([
                 'status' => 'finished',
             ]);
-        } catch(UploadException $exception) {
+        } catch (UploadException $exception) {
             // When Upload Token Expired, restart it.
             if ($exception->getCode() === 120010223) {
                 $this->createFile($video);
@@ -144,7 +144,7 @@ class OriginalUploadService implements UploadService
         do {
             $check = $this->api->check(gethostbyname($video->upload_server_uri), $video->upload_token);
             sleep(config('youku.check_waiting', 10));
-        } while(!$check->isFinished() || $check->getStatus() !== 1);
+        } while (!$check->isFinished() || $check->getStatus() !== 1);
     }
 
     protected function commitFile(Video $video)
