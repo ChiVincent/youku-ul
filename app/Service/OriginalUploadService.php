@@ -42,7 +42,7 @@ class OriginalUploadService implements UploadService
                 config('youku.meta.public_type', 'all'),
                 config('youku.meta.watch_password', null),
                 0,
-                config('youku.oss', false),
+                (int) config('youku.oss', false),
                 0
             );
             $this->api->createFile(

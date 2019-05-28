@@ -4,7 +4,7 @@ return [
     'client_id' => env('YOUKU_CLIENT_ID'),
     'access_token' => env('YOUKU_ACCESS_TOKEN'),
 
-    'oss' => env('YOUKU_OSS'),
+    'oss' => env('YOUKU_OSS', false),
 
     // Configure for original upload method.
     'slice_size' => env('YOUKU_SLICE_SIZE', 10 * 1024 * 1024), // 10MB
