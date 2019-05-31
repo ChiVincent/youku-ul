@@ -30,7 +30,7 @@ class OriginalUploadService implements UploadService
             $response = $this->api->create(
                 config('youku.client_id'),
                 config('youku.access_token'),
-                $video->name,
+                mb_strcut($video->name, 0, config('youku.max_title_length')),
                 'classical-music',
                 '',
                 $video->name,
