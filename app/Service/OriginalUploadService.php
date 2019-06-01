@@ -50,7 +50,7 @@ class OriginalUploadService implements UploadService
                 $response->getUploadToken(),
                 filesize($video->path),
                 pathinfo($video->path, PATHINFO_EXTENSION),
-                (int) (config('YOUKU_SLICE_SIZE', 10 * 1024 * 1024) / 1024)
+                (int) (config('slice_size', 10 * 1024 * 1024) / 1024)
             );
 
             $video->upload_token = $response->getUploadToken();
