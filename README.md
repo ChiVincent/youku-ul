@@ -20,6 +20,7 @@ $ php youku-ul upload {your_storage_path_for_videos}
 
 1. OSS Upload Method is not implemented by youku.com.
 2. Please create empty file in `DB_DATABASE` path. 
+3. **DO NOT** run uploader more than 1 process, it could be race condition.
 
 ## Credit
 
