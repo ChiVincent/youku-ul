@@ -30,7 +30,7 @@ class OssUploadService implements UploadService
             $response = $this->api->create(
                 config('youku.client_id'),
                 config('youku.access_token'),
-                $video->name,
+                mb_strcut($video->name, 0, 60),
                 'classical-music',
                 '',
                 $video->name,

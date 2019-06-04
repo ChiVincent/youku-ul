@@ -30,7 +30,7 @@ class OriginalUploadService implements UploadService
             $response = $this->api->create(
                 config('youku.client_id'),
                 config('youku.access_token'),
-                $video->name,
+                mb_strcut($video->name, 0, config('youku.max_title_length')),
                 'classical-music',
                 '',
                 $video->name,
@@ -50,7 +50,7 @@ class OriginalUploadService implements UploadService
                 $response->getUploadToken(),
                 filesize($video->path),
                 pathinfo($video->path, PATHINFO_EXTENSION),
-                (int) (config('YOUKU_SLICE_SIZE', 10 * 1024 * 1024) / 1024)
+                (int) (config('slice_size', 10 * 1024 * 1024) / 1024)
             );
 
             $video->upload_token = $response->getUploadToken();
@@ -66,11 +66,10 @@ class OriginalUploadService implements UploadService
     public function uploadFile(Video $video)
     {
         try {
-            $slices = $this->sliceBinary($video->path, $video->slice_size);
             $video->update([
                 'status' => 'uploading',
             ]);
-            $this->uploadSlices($video, $slices, $video->slice_size);
+            $this->uploadSlices($video, $video->slice_size);
             $video->update([
                 'status' => 'checking',
             ]);
@@ -93,29 +92,27 @@ class OriginalUploadService implements UploadService
         }
     }
 
-    private function sliceBinary(string $path, int $size): array
+    private function sliceBinary(string $path, int $start, int $size): \Generator
     {
         $file = fopen($path, 'rb');
 
-        $slices = [];
-        $i = 0;
-        while ($data = stream_get_contents($file, $size, $size * $i++)) {
-            $slices[] = $data;
+        while ($data = stream_get_contents($file, $size, $size * $start++)) {
+            yield $data;
         }
 
         fclose($file);
-
-        return $slices;
     }
 
-    private function uploadSlices(Video $video, array $slices, int $size)
+    private function uploadSlices(Video $video, int $size)
     {
         $task = $this->createSliceRoot($video->upload_token, gethostbyname($video->upload_server_uri))->getSliceTaskId();
 
-        foreach ($slices as $i => $slice) {
+        $i = $video->uploaded_slices ?? 0;
+
+        foreach ($this->sliceBinary($video->path, $i, $size) as $slice) {
             $this->uploadCurrentSlice($slice, $video->upload_token, $task++, $size * $i, gethostbyname($video->upload_server_uri));
             $video->update([
-                'uploaded_slices' => $i,
+                'uploaded_slices' => $i++,
             ]);
         }
     }

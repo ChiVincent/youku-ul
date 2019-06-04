@@ -18,4 +18,6 @@ return [
         'watch_passoword' => env('YOUKU_VIDEO_WATCH_PASSWORD', null),
         'deshake' => env('YOUKU_VIDEO_DESHAKE', 0),
     ],
+
+    'max_title_length' => 60, // bytes
 ];
